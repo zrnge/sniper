@@ -1,4 +1,7 @@
 # SNIPER
+![Static Badge](https://img.shields.io/badge/Python-3.8%2B-blue)
+![Static Badge](https://img.shields.io/badge/Web-Pentesting-red)
+![Static Badge](https://img.shields.io/badge/Sniper-v.1-orange)
 
 <img src="Sniper.png" alt="drawing"/>
 
