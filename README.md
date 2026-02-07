@@ -52,3 +52,26 @@ production environments.
 
 ```bash
 pip install requests
+```
+
+### Clone
+```bash
+git clone https://github.com/zrnge/sniper.git
+cd sniper
+```
+## Basic Usage
+```bash
+python3 sniper.py --help
+```
+---
+
+### SNIPER always requires:
+- A target URL
+- At least one parameter with a payload file
+
+## Parameters and Payloads
+
+### Parameters are defined using:
+```bash
+--param <name>=<payload_file>
+```
