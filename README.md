@@ -1,5 +1,7 @@
 # SNIPER
 
+![sniper](https://github.com/zrnge/sniper/sniper.png)
+
 **Simple Network Input Payload ExploRer**
 
 Owner: https://github.com/zrnge  
