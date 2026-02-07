@@ -1,6 +1,6 @@
 # SNIPER
 
-![sniper](https://github.com/zrnge/sniper/sniper.png)
+![sniper](https://github.com/zrnge/sniper/Sniper.png)
 
 **Simple Network Input Payload ExploRer**
 
