@@ -75,3 +75,144 @@ python3 sniper.py --help
 ```bash
 --param <name>=<payload_file>
 ```
+Each payload file must contain one payload per line.
+
+Example:
+``
+admin
+test
+root
+``
+
+## Fuzzing Modes
+
+### 1. Cluster Bomb (default)
+Tests all combinations of payloads.
+Example:
+```bash
+python3 sniper.py \
+  -u https://target/login \
+  --param username=users.txt \
+  --param password=passwords.txt
+```
+This will try:
+``
+(user1, pass1)
+(user1, pass2)
+(user2, pass1)
+(user2, pass2)
+...
+``
+
+### 2. Pitchfork
+Tests payloads in parallel (1-to-1 mapping).
+```bash
+python3 sniper.py \
+  -u https://target/login \
+  --param username=users.txt \
+  --param password=passwords.txt \
+  --mode pitchfork
+```
+Useful when payloads are paired.
+
+## HTTP Methods
+POST (default)
+```bash
+-X POST
+```
+GET
+```bash
+-X GET
+```
+---
+## Response Filtering (Grep-Style)
+SNIPER allows filtering results during execution, similar to grep.
+Filter by Status Code:
+```bash
+--status 200
+```
+Multiple values:
+```bash
+--status 200,302,500
+```
+---
+## Filter by Response Length
+Exact length:
+```bash
+--len-eq 1234
+```
+Minimum length:
+```bash
+--len-min 1500
+```
+Maximum length:
+```bash
+--len-max 800
+```
+---
+## Invert Match (Find Anomalies)
+Show only responses that do NOT match the filter
+```bash
+--invert
+```
+Example:
+```bash
+--status 401 --invert
+```
+---
+## Example Scenarios
+### Successful Login Detection
+```bash
+python3 sniper.py \
+  -u https://target/login \
+  --param username=users.txt \
+  --param password=passwords.txt \
+  --status 200 \
+  --len-min 1500
+```
+### Anomaly Detection
+```bash
+python3 sniper.py \
+  -u https://target/login \
+  --param username=users.txt \
+  --param password=passwords.txt \
+  --status 401 \
+  --invert
+```
+### Rate Limiting
+```bash
+--delay 0.5
+```
+Adds a delay (seconds) between requests.
+### Custom Headers
+```bash
+-H "Authorization: Bearer TOKEN"
+-H "User-Agent: SNIPER"
+```
+---
+## Output Format
+SNIPER produces clean, parseable output:
+```bash
+PARAMS={'username': 'admin', 'password': 'admin123'} STATUS=200 LENGTH=1876
+```
+### This format is designed for:
+- Shell pipelines
+- SIEM ingestion
+- Log processing
+- CI/CD jobs
+
+### Automation & CI/CD
+SNIPER is suitable for:
+- Pre-release security checks
+- Regression testing
+- Canary environment validation
+
+Example:
+```bash
+python3 sniper.py ... --status 500 | tee findings.log
+```
+
+## Safety & Legal Notice
+
+SNIPER is intended only for systems you own or are explicitly authorized to test.
+Unauthorized use against third-party systems may be illegal.
