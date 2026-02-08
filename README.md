@@ -108,7 +108,7 @@ python3 sniper.py \
 
 ### Parameters are defined using:
 ```bash
---param <name>=<payload_file>
+--param <name>=<payload_file> or <remote_payload>
 ```
 Each payload file must contain one payload per line.
 
