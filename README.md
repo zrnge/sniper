@@ -103,7 +103,7 @@ https://target/search?q=<payload3>
 python3 sniper.py \
   -u https://target/search \
   -X GET \
-  --param name=https://raw.githubusercontent.com/danielmiessler/SecLists/refs/heads/master/Fuzzing/XSS/human-friendly/XSS-BruteLogic.txt
+  --param q=https://raw.githubusercontent.com/danielmiessler/SecLists/refs/heads/master/Fuzzing/XSS/human-friendly/XSS-BruteLogic.txt
 ```
 
 ### Parameters are defined using:
