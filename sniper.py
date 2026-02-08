@@ -2,7 +2,7 @@
 # ============================================================
 #  SNIPER - Simple Network Input Payload ExploRer
 #  Owner  : https://github.com/zrnge
-#  License: Use only where explicitly authorized
+#  Purpose: Web parameter fuzzing & anomaly detection
 # ============================================================
 
 import argparse
@@ -11,7 +11,9 @@ import requests
 import sys
 import time
 from typing import Dict, List, Optional, Set
+from urllib.parse import urlparse
 
+# ---------------- Banner ---------------- #
 
 BANNER = r"""
  ███████╗███╗   ██╗██╗██████╗ ███████╗██████╗
@@ -25,15 +27,45 @@ BANNER = r"""
  Owner: github.com/zrnge
 """
 
+# ---------------- Payload Loader ---------------- #
 
-def load_payloads(path: str) -> List[str]:
+def load_payloads(
+    source: str,
+    timeout: int = 10,
+    max_size_mb: int = 10,
+) -> List[str]:
+    """
+    Load payloads from a local file or remote URL.
+    Encoding tolerant and pentest-safe.
+    """
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            return [l.strip() for l in f if l.strip()]
+        parsed = urlparse(source)
+
+        # Remote payload source
+        if parsed.scheme in ("http", "https"):
+            resp = requests.get(source, timeout=timeout)
+            resp.raise_for_status()
+
+            size_mb = len(resp.content) / (1024 * 1024)
+            if size_mb > max_size_mb:
+                print(f"[!] Remote payload file too large ({size_mb:.2f} MB)")
+                sys.exit(1)
+
+            text = resp.content.decode("utf-8", errors="ignore")
+            return [line.strip() for line in text.splitlines() if line.strip()]
+
+        # Local payload source
+        with open(source, "r", encoding="utf-8", errors="ignore") as f:
+            return [line.strip() for line in f if line.strip()]
+
+    except requests.RequestException as e:
+        print(f"[!] Failed to fetch remote payloads: {e}")
+        sys.exit(1)
     except Exception as e:
-        print(f"[!] Failed to read payload file {path}: {e}")
+        print(f"[!] Failed to read payload source {source}: {e}")
         sys.exit(1)
 
+# ---------------- Helpers ---------------- #
 
 def parse_headers(header_list):
     headers = {}
@@ -93,6 +125,7 @@ def build_payload_matrix(
         for combo in itertools.product(*values):
             yield dict(zip(keys, combo))
 
+# ---------------- Core Fuzzer ---------------- #
 
 def fuzz(
     url: str,
@@ -145,18 +178,20 @@ def fuzz(
                     f"LENGTH={length}"
                 )
 
-            time.sleep(delay)
+            if delay > 0:
+                time.sleep(delay)
 
         except requests.RequestException as e:
             if invert:
                 print(f"PARAMS={params} ERROR={e}")
 
+# ---------------- CLI ---------------- #
 
 def main():
     print(BANNER)
 
     parser = argparse.ArgumentParser(
-        description="SNIPER – Multi-parameter HTTP fuzzer"
+        description="SNIPER – Production-ready web parameter fuzzer"
     )
 
     parser.add_argument("-u", "--url", required=True)
@@ -168,7 +203,7 @@ def main():
         "--param",
         action="append",
         required=True,
-        help="Parameter mapping: name=payload_file (repeatable)",
+        help="Parameter mapping: name=payload_source (file or URL)",
     )
 
     parser.add_argument(
@@ -182,7 +217,7 @@ def main():
 
     parser.add_argument("-H", "--header", action="append", default=[])
 
-    # Grep-style filters
+    # Filters
     parser.add_argument("--status")
     parser.add_argument("--len-eq", type=int)
     parser.add_argument("--len-min", type=int)
@@ -191,13 +226,14 @@ def main():
 
     args = parser.parse_args()
 
+    # Load payloads
     param_payloads = {}
     for p in args.param:
         if "=" not in p:
-            print("[!] Invalid --param format (use name=file.txt)")
+            print("[!] Invalid --param format (use name=source)")
             sys.exit(1)
-        name, file = p.split("=", 1)
-        param_payloads[name] = load_payloads(file)
+        name, source = p.split("=", 1)
+        param_payloads[name] = load_payloads(source)
 
     headers = parse_headers(args.header)
     status_filter = parse_status_filter(args.status)
@@ -220,6 +256,7 @@ def main():
         invert=args.invert,
     )
 
+# ---------------- Entry ---------------- #
 
 if __name__ == "__main__":
     main()
