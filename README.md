@@ -64,11 +64,32 @@ pip install requests
 git clone https://github.com/zrnge/sniper.git
 cd sniper
 ```
+---
 ## Basic Usage
 ```bash
 python3 sniper.py --help
 ```
----
+### Single-Parameter Usage (Recommended for Web Testing)
+SNIPER fully supports single-parameter fuzzing, making it suitable for classic web testing scenarios such as:
+- XSS
+- SQLi
+- SSTI
+- LFI/RFI
+- Open redirect testing
+Example: Fuzzing a Single Query Parameter
+```bash
+python3 sniper.py \
+  -u https://target/search \
+  -X GET \
+  --param q=xss.txt
+```
+This will generate requests equivalent to:
+```
+https://target/search?q=<payload1>
+https://target/search?q=<payload2>
+https://target/search?q=<payload3>
+...
+```
 
 ### SNIPER always requires:
 - A target URL
