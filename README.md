@@ -69,6 +69,13 @@ cd sniper
 ```bash
 python3 sniper.py --help
 ```
+
+### SNIPER always requires:
+- A target URL
+- At least one parameter with a payload file
+
+## Parameters and Payloads
+
 ### Single-Parameter Usage (Recommended for Web Testing)
 SNIPER fully supports single-parameter fuzzing, making it suitable for classic web testing scenarios such as:
 - XSS
@@ -91,12 +98,6 @@ https://target/search?q=<payload3>
 ...
 ```
 
-### SNIPER always requires:
-- A target URL
-- At least one parameter with a payload file
-
-## Parameters and Payloads
-
 ### Parameters are defined using:
 ```bash
 --param <name>=<payload_file>
@@ -104,11 +105,11 @@ https://target/search?q=<payload3>
 Each payload file must contain one payload per line.
 
 Example:
-``
+```
 admin
 test
 root
-``
+```
 
 ## Fuzzing Modes
 
@@ -122,13 +123,13 @@ python3 sniper.py \
   --param password=passwords.txt
 ```
 This will try:
-``
+```
 (user1, pass1)
 (user1, pass2)
 (user2, pass1)
 (user2, pass2)
 ...
-``
+```
 
 ### 2. Pitchfork
 Tests payloads in parallel (1-to-1 mapping).
