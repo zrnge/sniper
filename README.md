@@ -98,6 +98,14 @@ https://target/search?q=<payload3>
 ...
 ```
 
+### Remote-payload capable
+```bash
+python3 sniper.py \
+  -u https://target/search \
+  -X GET \
+  --param name=https://raw.githubusercontent.com/danielmiessler/SecLists/refs/heads/master/Fuzzing/XSS/human-friendly/XSS-BruteLogic.txt
+```
+
 ### Parameters are defined using:
 ```bash
 --param <name>=<payload_file>
